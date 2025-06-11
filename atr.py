@@ -6,12 +6,25 @@ import pyperclip
 import time
 import tkinter as tk
 from tkinter import simpledialog, messagebox, filedialog
+import sys
+from pathlib import Path
 
-CONFIG_FILE = "replacements.json"
+def get_app_dir():
+    if getattr(sys, 'frozen', False):
+        # If compiled with PyInstaller
+        app_dir = Path(os.path.expandvars(r'%APPDATA%\ATR'))
+    else:
+        # If running from source
+        app_dir = Path(os.path.dirname(os.path.abspath(__file__)))
+    
+    app_dir.mkdir(parents=True, exist_ok=True)
+    return app_dir
+
+CONFIG_FILE = get_app_dir() / "replacements.json"
 
 # --- Load/Save ---
 def load_replacements():
-    if os.path.exists(CONFIG_FILE):
+    if CONFIG_FILE.exists():
         with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
     return {}

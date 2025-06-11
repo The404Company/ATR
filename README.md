@@ -18,6 +18,14 @@ A Windows application that automatically replaces text shortcuts with symbols, e
 
 ## Installation
 
+### Method 1: Using the Installer (Recommended)
+
+1. Download and run `installer.py`
+2. Click "Install" and wait for the process to complete
+3. ATR will automatically start with Windows
+
+### Method 2: Manual Installation
+
 1. Ensure you have Python 3.x installed
 2. Install required dependencies:
 ```sh
