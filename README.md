@@ -25,22 +25,8 @@ A Windows application that automatically replaces text shortcuts with symbols, e
 3. Click "Install" and wait for the process to complete
 4. ATR will automatically start with Windows
 
-
-
-## Usage
-
-1. Run the program:
-```sh
-python atr.py
-```
-
-2. The GUI will appear, showing all available replacements
-3. Type any trigger word followed by a space to automatically replace it with its corresponding symbol
-4. Use the GUI to:
-   - Add new replacements
-   - Edit existing replacements
-   - Delete replacements
-   - Save changes
+### Not using the Installer
+1. You have to figure out yourself how to run the program uncompiled and without installer 😁
 
 ## Examples
 
