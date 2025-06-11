@@ -30,6 +30,20 @@ class InstallerGUI:
         self.root = tk.Tk()
         self.root.title("ATR Installer")
         self.root.geometry("400x300")
+
+        # Set window icon
+        try:
+            # When running from compiled exe
+            if getattr(sys, 'frozen', False):
+                icon_path = sys._MEIPASS + r"\atr_logo.ico"
+                self.root.iconbitmap(default=icon_path)
+            # When running from source
+            else:
+                icon_path = Path("atr_logo.ico")
+                if icon_path.exists():
+                    self.root.iconbitmap(default=str(icon_path))
+        except Exception:
+            pass
         
         self.program_files = os.path.expandvars("%ProgramFiles%")
         self.install_dir = Path(self.program_files) / "ATR"
