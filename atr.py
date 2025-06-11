@@ -94,6 +94,12 @@ class ReplacementGUI:
         self.replacements = load_replacements()
         self.replacer.replacements = self.replacements
         self.config = load_config()
+
+        # Set window icon
+        icon_path = Path(os.path.expandvars(r'%APPDATA%\ATR\atr_logo.ico'))
+        if icon_path.exists():
+            self.root.iconbitmap(icon_path)
+
         self.create_widgets()
         self.setup_tray()
         
@@ -169,22 +175,31 @@ class ReplacementGUI:
         messagebox.showinfo("Saved", "Replacements saved.")
 
     def setup_tray(self):
-        icon_path = Path(os.path.expandvars(r'%APPDATA%\ATR\atr_logo.png'))
-        if icon_path.exists():
-            icon_image = Image.open(icon_path)
-        else:
-            icon_image = Image.new('RGB', (64, 64), 'black')
-
-        self.icon = pystray.Icon(
-            "ATR",
-            icon_image,
-            "ATR",
-            menu=pystray.Menu(
-                pystray.MenuItem("Show", self.show_window),
-                pystray.MenuItem("Exit", self.quit_app)
+        icon_path = Path(os.path.expandvars(r'%APPDATA%\ATR\atr_logo.ico'))
+        try:
+            self.icon = pystray.Icon(
+                "ATR",
+                Image.open(icon_path),
+                "ATR",
+                menu=pystray.Menu(
+                    pystray.MenuItem("Show", self.show_window),
+                    pystray.MenuItem("Exit", self.quit_app)
+                )
             )
-        )
-        threading.Thread(target=self.icon.run, daemon=True).start()
+            threading.Thread(target=self.icon.run, daemon=True).start()
+        except Exception:
+            # Fallback to default black icon if loading fails
+            icon_image = Image.new('RGB', (64, 64), 'black')
+            self.icon = pystray.Icon(
+                "ATR",
+                icon_image,
+                "ATR",
+                menu=pystray.Menu(
+                    pystray.MenuItem("Show", self.show_window),
+                    pystray.MenuItem("Exit", self.quit_app)
+                )
+            )
+            threading.Thread(target=self.icon.run, daemon=True).start()
 
     def minimize_to_tray(self):
         self.root.withdraw()

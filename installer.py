@@ -131,8 +131,8 @@ class InstallerGUI:
 
             # Download icon
             self.update_status("Downloading icon...", 5)
-            icon_response = requests.get("https://raw.githubusercontent.com/The404Company/ATR/refs/heads/main/atr_logo.png")
-            icon_path = self.appdata_dir / "atr_logo.png"
+            icon_response = requests.get("https://raw.githubusercontent.com/The404Company/ATR/refs/heads/main/atr_logo.ico")
+            icon_path = self.appdata_dir / "atr_logo.ico"
             with open(icon_path, "wb") as f:
                 f.write(icon_response.content)
 
