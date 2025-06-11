@@ -24,6 +24,8 @@ A Windows application that automatically replaces text shortcuts with symbols, e
 2. Run the installer (requires administrator privileges)
 3. Click "Install" and wait for the process to complete
 4. ATR will automatically start with Windows
+5. (Optional) Download the preset replacements from [preset/replacements.json] and copy it to the `%AppData%\Roaming\ATR` directory to use the default replacements made by the developers
+6. (Optional) go to `C:\Program Files\ATR`, right-click `ATR.exe`, and create a shortcut to your desktop or pin it to the Start-Menu for easy access
 
 ### Not using the Installer
 1. You have to figure out yourself how to run the program uncompiled and without installer 😁
