@@ -18,7 +18,7 @@ A Windows application that automatically replaces text shortcuts with symbols, e
 
 ## Installation
 
-### Method 1: Using the Installer (Recommended)
+### Using the Installer
 
 1. Download the latest `ATR_Installer.exe` from [Releases](https://github.com/The404Company/ATR/releases)
 2. Run the installer (requires administrator privileges)
