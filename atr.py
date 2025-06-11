@@ -8,6 +8,9 @@ import tkinter as tk
 from tkinter import simpledialog, messagebox, filedialog
 import sys
 from pathlib import Path
+import pystray
+from PIL import Image
+import subprocess
 
 def get_app_dir():
     if getattr(sys, 'frozen', False):
@@ -32,6 +35,20 @@ def load_replacements():
 def save_replacements(data):
     with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
+
+def get_config_path():
+    return get_app_dir() / "config.json"
+
+def load_config():
+    config_path = get_config_path()
+    if config_path.exists():
+        with open(config_path, 'r') as f:
+            return json.load(f)
+    return {"start_minimized": False}
+
+def save_config(config):
+    with open(get_config_path(), 'w') as f:
+        json.dump(config, f)
 
 # --- Global Replacer ---
 class AutoReplacer:
@@ -76,7 +93,12 @@ class ReplacementGUI:
         self.replacer = replacer
         self.replacements = load_replacements()
         self.replacer.replacements = self.replacements
+        self.config = load_config()
         self.create_widgets()
+        self.setup_tray()
+        
+        if getattr(sys, 'frozen', False) and self.config.get("start_minimized", False):
+            self.root.withdraw()
 
     def create_widgets(self):
         self.root.title("Auto Text Replacer")
@@ -95,6 +117,14 @@ class ReplacementGUI:
         tk.Button(btn_frame, text="Edit", command=self.edit_entry).grid(row=0, column=1, padx=5)
         tk.Button(btn_frame, text="Delete", command=self.delete_entry).grid(row=0, column=2, padx=5)
         tk.Button(btn_frame, text="Save", command=self.save).grid(row=0, column=3, padx=5)
+
+        bottom_frame = tk.Frame(self.frame)
+        bottom_frame.pack(pady=5)
+
+        tk.Button(bottom_frame, text="Open ATR Folder", 
+                 command=self.open_app_dir).pack(side=tk.LEFT, padx=5)
+        tk.Button(bottom_frame, text="Minimize to Tray", 
+                 command=self.minimize_to_tray).pack(side=tk.LEFT, padx=5)
 
     def update_listbox(self):
         self.listbox.delete(0, tk.END)
@@ -138,6 +168,38 @@ class ReplacementGUI:
         self.replacer.replacements = self.replacements
         messagebox.showinfo("Saved", "Replacements saved.")
 
+    def setup_tray(self):
+        self.icon = pystray.Icon(
+            "ATR",
+            Image.new('RGB', (64, 64), 'black'),
+            "ATR",
+            menu=pystray.Menu(
+                pystray.MenuItem("Show", self.show_window),
+                pystray.MenuItem("Exit", self.quit_app)
+            )
+        )
+        threading.Thread(target=self.icon.run, daemon=True).start()
+
+    def minimize_to_tray(self):
+        self.root.withdraw()
+        self.config["start_minimized"] = True
+        save_config(self.config)
+
+    def show_window(self):
+        self.root.deiconify()
+        self.root.lift()
+        self.config["start_minimized"] = False
+        save_config(self.config)
+
+    def quit_app(self):
+        self.icon.stop()
+        self.root.quit()
+
+    def open_app_dir(self):
+        app_dir = get_app_dir()
+        if sys.platform == 'win32':
+            subprocess.run(['explorer', str(app_dir)])
+
 def main():
     replacements = load_replacements()
     replacer = AutoReplacer(replacements)
@@ -145,6 +207,14 @@ def main():
 
     root = tk.Tk()
     gui = ReplacementGUI(root, replacer)
+    
+    def on_closing():
+        if getattr(sys, 'frozen', False):
+            gui.minimize_to_tray()
+        else:
+            root.quit()
+    
+    root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop()
 
 if __name__ == "__main__":

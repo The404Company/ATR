@@ -79,7 +79,7 @@ class InstallerGUI:
             
             # Install required packages
             self.update_status("Installing dependencies...", 50)
-            subprocess.run([sys.executable, "-m", "pip", "install", "pyinstaller", "pynput", "pyperclip"])
+            subprocess.run([sys.executable, "-m", "pip", "install", "pyinstaller", "pynput", "pyperclip", "pystray", "Pillow"])
             
             # Compile to exe
             self.update_status("Compiling...", 70)
