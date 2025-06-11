@@ -7,6 +7,7 @@ import winreg
 import subprocess
 from pathlib import Path
 import ctypes
+import shutil
 
 def is_admin():
     try:
@@ -170,11 +171,20 @@ class InstallerGUI:
             
             # Compile to exe
             self.update_status("Compiling...", 70)
+            
+            # Get Python's tcl/tk directory
+            import tkinter
+            tcl_lib = os.path.dirname(tkinter.__file__)
+            
             subprocess.run([
                 "pyinstaller",
                 "--noconfirm",
                 "--onefile",
                 "--windowed",
+                "--hidden-import", "tkinter",
+                "--hidden-import", "tkinter.ttk",
+                f"--add-data={tcl_lib}/tcl8;tcl8",
+                f"--add-data={tcl_lib}/tk8;tk8",
                 f"--icon={icon_path}",
                 str(temp_atr)
             ], cwd=temp_dir)
@@ -185,11 +195,23 @@ class InstallerGUI:
             install_dir = Path(program_files) / "ATR"
             install_dir.mkdir(exist_ok=True)
             
-            # Copy executable
-            exe_path = temp_dir / "dist" / "atr.exe"
+            # Copy executable with better error handling
+            exe_path = temp_dir / "dist" / "atr.exe"  # Changed back to dist/atr.exe
+            if not exe_path.exists():
+                # List directory contents for debugging
+                dist_dir = temp_dir / "dist"
+                if dist_dir.exists():
+                    files = list(dist_dir.glob("*"))
+                    raise FileNotFoundError(f"Compiled executable not found. Files in dist: {files}")
+                else:
+                    raise FileNotFoundError(f"Dist directory not found at {dist_dir}")
+                
             installed_exe = install_dir / "atr.exe"
-            exe_path.rename(installed_exe)
-            
+            if installed_exe.exists():
+                os.remove(installed_exe)
+                
+            shutil.copy2(exe_path, installed_exe)
+
             # Add to startup
             startup_path = Path(os.getenv('APPDATA')) / r"Microsoft\Windows\Start Menu\Programs\Startup"
             with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows\CurrentVersion\Run", 0, winreg.KEY_ALL_ACCESS) as key:
