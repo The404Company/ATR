@@ -169,9 +169,15 @@ class ReplacementGUI:
         messagebox.showinfo("Saved", "Replacements saved.")
 
     def setup_tray(self):
+        icon_path = Path(os.path.expandvars(r'%APPDATA%\ATR\atr_logo.png'))
+        if icon_path.exists():
+            icon_image = Image.open(icon_path)
+        else:
+            icon_image = Image.new('RGB', (64, 64), 'black')
+
         self.icon = pystray.Icon(
             "ATR",
-            Image.new('RGB', (64, 64), 'black'),
+            icon_image,
             "ATR",
             menu=pystray.Menu(
                 pystray.MenuItem("Show", self.show_window),

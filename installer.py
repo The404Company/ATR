@@ -33,6 +33,8 @@ class InstallerGUI:
         
         self.program_files = os.path.expandvars("%ProgramFiles%")
         self.install_dir = Path(self.program_files) / "ATR"
+        self.appdata_dir = Path(os.getenv('APPDATA')) / "ATR"
+        self.appdata_dir.mkdir(exist_ok=True)
         self.installed = self.check_installation()
         
         # Center window
@@ -127,6 +129,13 @@ class InstallerGUI:
             if self.installed:
                 os.remove(self.install_dir / "atr.exe")
 
+            # Download icon
+            self.update_status("Downloading icon...", 5)
+            icon_response = requests.get("https://raw.githubusercontent.com/The404Company/ATR/refs/heads/main/atr_logo.png")
+            icon_path = self.appdata_dir / "atr_logo.png"
+            with open(icon_path, "wb") as f:
+                f.write(icon_response.content)
+
             # Download latest atr.py
             self.update_status("Downloading latest version...", 10)
             response = requests.get("https://raw.githubusercontent.com/The404Company/ATR/refs/heads/main/atr.py")
@@ -152,6 +161,7 @@ class InstallerGUI:
                 "--noconfirm",
                 "--onefile",
                 "--windowed",
+                f"--icon={icon_path}",
                 str(temp_atr)
             ], cwd=temp_dir)
             
