@@ -20,19 +20,12 @@ A Windows application that automatically replaces text shortcuts with symbols, e
 
 ### Method 1: Using the Installer (Recommended)
 
-1. Download and run `installer.py`
-2. Click "Install" and wait for the process to complete
-3. ATR will automatically start with Windows
+1. Download the latest `ATR_Installer.exe` from [Releases](https://github.com/The404Company/ATR/releases)
+2. Run the installer (requires administrator privileges)
+3. Click "Install" and wait for the process to complete
+4. ATR will automatically start with Windows
 
-### Method 2: Manual Installation
 
-1. Ensure you have Python 3.x installed
-2. Install required dependencies:
-```sh
-pip install pynput pyperclip
-```
-3. Download or clone this repository
-4. Copy the preset `replacements.json` from the `preset` folder to the same directory as `atr.py` (optional)
 
 ## Usage
 
